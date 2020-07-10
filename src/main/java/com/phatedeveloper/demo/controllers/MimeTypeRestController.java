@@ -1,10 +1,14 @@
 package com.phatedeveloper.demo.controllers;
 
-import com.phatedeveloper.demo.MimeType;
+import com.phatedeveloper.demo.models.MimeType;
+import com.phatedeveloper.demo.models.MimeTypeValidation;
 import com.phatedeveloper.demo.service.MimeTypeService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,5 +25,10 @@ public class MimeTypeRestController {
 	@GetMapping
 	public List<MimeType> getAll() {
 		return this.mimeTypeService.getAll();
+	}
+
+	@PostMapping("/validate-folder")
+	public List<MimeTypeValidation> validateFolder(@RequestParam("files") List<MultipartFile> files) {
+		return this.mimeTypeService.validateFiles(files);
 	}
 }

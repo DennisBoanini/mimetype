@@ -80,7 +80,7 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 		}
 
 		int start = (int) pageable.getOffset();
-		int end = Math.min((start + pageable.getPageSize()), validationResult.size());
+		int end = Math.min(start + pageable.getPageSize(), validationResult.size());
 
 		return new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
 	}

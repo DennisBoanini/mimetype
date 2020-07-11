@@ -27,8 +27,8 @@ public class MimeTypeRestController {
 		return this.mimeTypeService.getAll();
 	}
 
-	@PostMapping("/validate-folder")
-	public List<MimeTypeValidation> validateFolder(@RequestParam("files") List<MultipartFile> files) {
+	@PostMapping("/validate-files")
+	public List<MimeTypeValidation> validateFiles(@RequestParam("files") List<MultipartFile> files) {
 		return this.mimeTypeService.validateFiles(files);
 	}
 }

@@ -33,7 +33,7 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 	@Override
 	public List<MimeTypeValidation> validateFiles(List<MultipartFile> files) {
 		var validationResult = new ArrayList<MimeTypeValidation>();
-		List<String> validTypes = StreamSupport.stream(this.mimeTypeRepository.findAll().spliterator(), true).map(MimeType::getType).collect(Collectors.toList());
+		List<String> validTypes = this.mimeTypeRepository.findAll().parallelStream().map(MimeType::getType).collect(Collectors.toList());
 
 		for (MultipartFile file : files) {
 			var validation = new MimeTypeValidation();

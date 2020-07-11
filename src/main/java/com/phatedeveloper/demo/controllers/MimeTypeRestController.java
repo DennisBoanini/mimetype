@@ -3,6 +3,8 @@ package com.phatedeveloper.demo.controllers;
 import com.phatedeveloper.demo.models.MimeType;
 import com.phatedeveloper.demo.models.MimeTypeValidation;
 import com.phatedeveloper.demo.service.MimeTypeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +36,7 @@ public class MimeTypeRestController {
 	}
 
 	@GetMapping("/validate-folder")
-	public List<MimeTypeValidation> validateFiles(@RequestParam("folderPath") String pathToFolder) throws IOException {
-		return this.mimeTypeService.validateFolder(pathToFolder);
+	public Page<MimeTypeValidation> validateFiles(@RequestParam("folderPath") String pathToFolder, Pageable pageable) throws IOException {
+		return this.mimeTypeService.validateFolder(pathToFolder, pageable);
 	}
 }

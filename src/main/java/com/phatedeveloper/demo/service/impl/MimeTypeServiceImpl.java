@@ -5,6 +5,9 @@ import com.phatedeveloper.demo.models.MimeTypeValidation;
 import com.phatedeveloper.demo.repositories.MimeTypeRepository;
 import com.phatedeveloper.demo.service.MimeTypeService;
 import org.apache.tika.Tika;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +26,7 @@ import java.util.stream.StreamSupport;
 @Transactional
 public class MimeTypeServiceImpl implements MimeTypeService {
 
-	private MimeTypeRepository mimeTypeRepository;
+	private final MimeTypeRepository mimeTypeRepository;
 
 	public MimeTypeServiceImpl(MimeTypeRepository mimeTypeRepository) {
 		this.mimeTypeRepository = mimeTypeRepository;
@@ -53,7 +56,7 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 	}
 
 	@Override
-	public ArrayList<MimeTypeValidation> validateFolder(String pathToFolder) throws IOException {
+	public Page<MimeTypeValidation> validateFolder(String pathToFolder, Pageable pageable) throws IOException {
 		if (Files.notExists(Path.of(pathToFolder))) {
 			throw new IllegalArgumentException("The folder at path does not exist (" + pathToFolder + ")");
 		}
@@ -76,7 +79,10 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 			});
 		}
 
-		return validationResult;
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), validationResult.size());
+
+		return new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
 	}
 
 }

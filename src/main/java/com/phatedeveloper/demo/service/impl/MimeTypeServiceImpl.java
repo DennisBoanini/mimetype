@@ -65,12 +65,12 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 		var validationResult = new ArrayList<MimeTypeValidation>();
 
 		try (Stream<Path> walk = Files.walk(Paths.get(pathToFolder))) {
-			walk.filter(Files::isRegularFile).forEach(x -> {
+			walk.filter(Files::isRegularFile).forEach(file -> {
 				Tika tika = new Tika();
 				try {
-					String fileMimeType = tika.detect(x);
+					String fileMimeType = tika.detect(file);
 					var validation = new MimeTypeValidation();
-					validation.setFilename(x.getFileName().toString());
+					validation.setFilename(file.getFileName().toString());
 					validation.setValidated(validTypes.contains(fileMimeType));
 					validationResult.add(validation);
 				} catch (IOException e) {

@@ -2,13 +2,14 @@ package com.phatedeveloper.demo.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity(name = "MIME_TYPE")
 public class MimeType {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 	private String type;
 	private String extension;

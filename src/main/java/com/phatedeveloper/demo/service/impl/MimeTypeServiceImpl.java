@@ -47,7 +47,7 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 		for (MultipartFile file : files) {
 			var validation = new MimeTypeValidation();
 			validation.setFilename(file.getOriginalFilename());
-			validation.setValid(validTypes.contains(file.getContentType()));
+			validation.setValidated(validTypes.contains(file.getContentType()));
 
 			validationResult.add(validation);
 		}
@@ -71,7 +71,7 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 					String fileMimeType = tika.detect(x);
 					var validation = new MimeTypeValidation();
 					validation.setFilename(x.getFileName().toString());
-					validation.setValid(validTypes.contains(fileMimeType));
+					validation.setValidated(validTypes.contains(fileMimeType));
 					validationResult.add(validation);
 				} catch (IOException e) {
 					e.printStackTrace();

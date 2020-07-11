@@ -3,7 +3,7 @@ package com.phatedeveloper.demo.models;
 public class MimeTypeValidation {
 
 	private String filename;
-	private boolean isValid;
+	private boolean validated;
 
 	public String getFilename() {
 		return filename;
@@ -13,12 +13,12 @@ public class MimeTypeValidation {
 		this.filename = filename;
 	}
 
-	public boolean isValid() {
-		return isValid;
+	public boolean isValidated() {
+		return validated;
 	}
 
-	public void setValid(boolean valid) {
-		isValid = valid;
+	public void setValidated(boolean validated) {
+		this.validated = validated;
 	}
 
 }

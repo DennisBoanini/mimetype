@@ -1,4 +1,4 @@
-package com.phatedeveloper.demo;
+package com.phatedeveloper.demo.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

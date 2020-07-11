@@ -1,6 +1,6 @@
 package com.phatedeveloper.demo.repositories;
 
-import com.phatedeveloper.demo.MimeType;
-import org.springframework.data.repository.CrudRepository;
+import com.phatedeveloper.demo.models.MimeType;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MimeTypeRepository extends CrudRepository<MimeType, Long> {}
+public interface MimeTypeRepository extends JpaRepository<MimeType, Long> {}

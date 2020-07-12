@@ -75,30 +75,38 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 
 		List<String> validTypes = this.mimeTypeRepository.findAll().parallelStream().map(MimeType::getType).collect(Collectors.toList());
 		var validationResult = new ArrayList<MimeTypeValidation>();
+		int start;
+		int end;
+		int totalPages;
 
 		try (Stream<Path> walk = Files.walk(Paths.get(pathToFolder))) {
-			walk.filter(Files::isRegularFile).forEach(file -> {
-				Tika tika = new Tika();
-				try {
-					if (Objects.requireNonNull(file.getFileName().toString()).endsWith("p7m")) {
-						validationResult.add(this.validateP7M(file.getFileName().toString(), validTypes));
-					} else {
-						String fileMimeType = tika.detect(file);
-						var validation = new MimeTypeValidation();
-						validation.setFilename(file.getFileName().toString());
-						validation.setValidated(validTypes.contains(fileMimeType));
-						validationResult.add(validation);
+			List<Path> pathList = walk.filter(Files::isRegularFile).collect(Collectors.toList());
+			totalPages = pathList.size();
+
+			start = (int) pageable.getOffset();
+			end = Math.min(start + pageable.getPageSize(), totalPages);
+
+			if (end >= start) {
+				pathList.subList(start, end).forEach(file -> {
+					Tika tika = new Tika();
+					try {
+						if (Objects.requireNonNull(file.getFileName().toString()).endsWith("p7m")) {
+							validationResult.add(this.validateP7M(file.getFileName().toString(), validTypes));
+						} else {
+							String fileMimeType = tika.detect(file);
+							var validation = new MimeTypeValidation();
+							validation.setFilename(file.getFileName().toString());
+							validation.setValidated(validTypes.contains(fileMimeType));
+							validationResult.add(validation);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
+				});
+			}
 		}
 
-		int start = (int) pageable.getOffset();
-		int end = Math.min(start + pageable.getPageSize(), validationResult.size());
-
-		Page<MimeTypeValidation> mimeTypeValidationPage = new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
+		Page<MimeTypeValidation> mimeTypeValidationPage = new PageImpl<>(validationResult, pageable, totalPages);
 
 		return this.mimeTypeValidationMapper.toPageDTOs(mimeTypeValidationPage);
 	}

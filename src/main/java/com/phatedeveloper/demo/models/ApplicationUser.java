@@ -1,5 +1,6 @@
 package com.phatedeveloper.demo.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,7 +12,11 @@ public class ApplicationUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+
+	@Column(nullable = false)
 	private String username;
+
+	@Column(nullable = false)
 	private String password;
 
 	public long getId() {

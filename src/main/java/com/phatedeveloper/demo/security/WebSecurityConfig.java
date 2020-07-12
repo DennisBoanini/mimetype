@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,15 +20,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String AUTH_URL = "/auth/token";
+	private static final String REGISTER_URL = "/auth/register";
 
 	private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JWTUserDetailsService jwtUserDetailsService;
 	private final JWTRequestFilter jwtRequestFilter;
+	private final PasswordEncoder passwordEncoder;
 
-	public WebSecurityConfig(JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint, JWTUserDetailsService jwtUserDetailsService, JWTRequestFilter jwtRequestFilter) {
+	public WebSecurityConfig(JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint, JWTUserDetailsService jwtUserDetailsService, JWTRequestFilter jwtRequestFilter, PasswordEncoder passwordEncoder) {
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
 		this.jwtUserDetailsService = jwtUserDetailsService;
 		this.jwtRequestFilter = jwtRequestFilter;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Autowired
@@ -37,12 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// configure AuthenticationManager so that it knows from where to load
 		// user for matching credentials
 		// Use BCryptPasswordEncoder
-		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(this.passwordEncoder);
 	}
 
 	@Bean
@@ -55,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests().antMatchers(HttpMethod.POST, AUTH_URL).permitAll()
+				.authorizeRequests().antMatchers(HttpMethod.POST, AUTH_URL, REGISTER_URL).permitAll()
 				// all other requests need to be authenticated
 				.anyRequest().authenticated().and()
 				// make sure we use stateless session; session won't be used to

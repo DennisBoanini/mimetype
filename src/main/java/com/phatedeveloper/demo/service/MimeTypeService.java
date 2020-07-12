@@ -13,7 +13,7 @@ public interface MimeTypeService {
 
 	List<MimeType> getAll();
 
-	List<MimeTypeValidation> validateFiles(List<MultipartFile> files);
+	List<MimeTypeValidation> validateFiles(List<MultipartFile> files) throws IOException;
 
 	Page<MimeTypeValidation> validateFolder(String pathToFolder, Pageable pageable) throws IOException;
 

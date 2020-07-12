@@ -45,7 +45,7 @@ Una risposta positiva sarà un *200 OK* e questo oggetto contenente il token gen
 
 }
 ```
-Tale token è da utilizzare per tutte le altre chiamate.
+Tale token è da utilizzare per tutte le altre chiamate, impostandolo nell'header della chiamata con chiave **Authorization** e valore **Bearer eyJhbGciOiJIUzUxMiJ0.eyJzdWI...**.
 
 
 ### MimeTypeRestController

@@ -30,7 +30,7 @@ E' il controller responsabile della registrazione e autenticazione dell'utente.
 ```
 Sia *username* che *password* sono obbligatori.
 Se la registrazione va a buon fine la risposta sarà *201 Created*
- - **POST** */token*: Endpoint per l'autenticazione utente. Il body deve **obbligattoriamente** contenere username e password, in questo modo
+ - **POST** */token*: Endpoint per l'autenticazione utente. Il body deve **obbligatoriamente** contenere username e password, in questo modo
  ```
 {
 	"username": "user", [String]

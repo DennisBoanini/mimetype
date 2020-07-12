@@ -1,5 +1,8 @@
 package com.phatedeveloper.demo.service.impl;
 
+import com.phatedeveloper.demo.dto.MimeTypeDTO;
+import com.phatedeveloper.demo.dto.MimeTypeValidationDTO;
+import com.phatedeveloper.demo.mapper.MimeTypeValidationMapper;
 import com.phatedeveloper.demo.models.MimeType;
 import com.phatedeveloper.demo.models.MimeTypeValidation;
 import com.phatedeveloper.demo.repositories.MimeTypeRepository;
@@ -28,20 +31,24 @@ import java.util.stream.StreamSupport;
 public class MimeTypeServiceImpl implements MimeTypeService {
 
 	private final MimeTypeRepository mimeTypeRepository;
+	private final MimeTypeValidationMapper mimeTypeValidationMapper;
 
-	public MimeTypeServiceImpl(MimeTypeRepository mimeTypeRepository) {
+	public MimeTypeServiceImpl(MimeTypeRepository mimeTypeRepository, MimeTypeValidationMapper mimeTypeValidationMapper) {
 		this.mimeTypeRepository = mimeTypeRepository;
+		this.mimeTypeValidationMapper = mimeTypeValidationMapper;
 	}
 
 	@Override
-	public List<MimeType> getAll() {
+	public List<MimeTypeDTO> getAll() {
 		Iterable<MimeType> mimeTypeIterable = this.mimeTypeRepository.findAll();
 
-		return StreamSupport.stream(mimeTypeIterable.spliterator(), true).collect(Collectors.toList());
+		List<MimeType> mimeTypes = StreamSupport.stream(mimeTypeIterable.spliterator(), true).collect(Collectors.toList());
+
+		return this.mimeTypeValidationMapper.toMimeTypeDTOs(mimeTypes);
 	}
 
 	@Override
-	public List<MimeTypeValidation> validateFiles(List<MultipartFile> files) throws IOException {
+	public List<MimeTypeValidationDTO> validateFiles(List<MultipartFile> files) throws IOException {
 		var validationResult = new ArrayList<MimeTypeValidation>();
 		List<String> validTypes = this.mimeTypeRepository.findAll().parallelStream().map(MimeType::getType).collect(Collectors.toList());
 
@@ -57,11 +64,11 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 			}
 		}
 
-		return validationResult;
+		return this.mimeTypeValidationMapper.toMimeTypeValidationDTOs(validationResult);
 	}
 
 	@Override
-	public Page<MimeTypeValidation> validateFolder(String pathToFolder, Pageable pageable) throws IOException {
+	public Page<MimeTypeValidationDTO> validateFolder(String pathToFolder, Pageable pageable) throws IOException {
 		if (Files.notExists(Path.of(pathToFolder))) {
 			throw new IllegalArgumentException("The folder at path does not exist (" + pathToFolder + ")");
 		}
@@ -91,7 +98,9 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), validationResult.size());
 
-		return new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
+		Page<MimeTypeValidation> mimeTypeValidationPage = new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
+
+		return this.mimeTypeValidationMapper.toPageDTOs(mimeTypeValidationPage);
 	}
 
 	private MimeTypeValidation validateP7M(String filename, List<String> validTypes) throws IOException {

@@ -1,7 +1,7 @@
 package com.phatedeveloper.demo.controllers;
 
-import com.phatedeveloper.demo.models.MimeType;
-import com.phatedeveloper.demo.models.MimeTypeValidation;
+import com.phatedeveloper.demo.dto.MimeTypeDTO;
+import com.phatedeveloper.demo.dto.MimeTypeValidationDTO;
 import com.phatedeveloper.demo.service.MimeTypeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,17 +26,17 @@ public class MimeTypeRestController {
 	}
 
 	@GetMapping
-	public List<MimeType> getAll() {
+	public List<MimeTypeDTO> getAll() {
 		return this.mimeTypeService.getAll();
 	}
 
 	@PostMapping("/validate-files")
-	public List<MimeTypeValidation> validateFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
+	public List<MimeTypeValidationDTO> validateFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
 		return this.mimeTypeService.validateFiles(files);
 	}
 
 	@GetMapping("/validate-folder")
-	public Page<MimeTypeValidation> validateFiles(@RequestParam("folderPath") String pathToFolder, Pageable pageable) throws IOException {
+	public Page<MimeTypeValidationDTO> validateFiles(@RequestParam("folderPath") String pathToFolder, Pageable pageable) throws IOException {
 		return this.mimeTypeService.validateFolder(pathToFolder, pageable);
 	}
 }

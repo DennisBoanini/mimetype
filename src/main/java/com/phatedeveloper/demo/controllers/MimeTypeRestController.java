@@ -31,7 +31,7 @@ public class MimeTypeRestController {
 	}
 
 	@PostMapping("/validate-files")
-	public List<MimeTypeValidation> validateFiles(@RequestParam("files") List<MultipartFile> files) {
+	public List<MimeTypeValidation> validateFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
 		return this.mimeTypeService.validateFiles(files);
 	}
 

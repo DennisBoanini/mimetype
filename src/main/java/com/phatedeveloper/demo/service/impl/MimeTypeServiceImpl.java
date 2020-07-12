@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -40,16 +41,20 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 	}
 
 	@Override
-	public List<MimeTypeValidation> validateFiles(List<MultipartFile> files) {
+	public List<MimeTypeValidation> validateFiles(List<MultipartFile> files) throws IOException {
 		var validationResult = new ArrayList<MimeTypeValidation>();
 		List<String> validTypes = this.mimeTypeRepository.findAll().parallelStream().map(MimeType::getType).collect(Collectors.toList());
 
 		for (MultipartFile file : files) {
-			var validation = new MimeTypeValidation();
-			validation.setFilename(file.getOriginalFilename());
-			validation.setValidated(validTypes.contains(file.getContentType()));
+			if (Objects.requireNonNull(file.getOriginalFilename()).endsWith("p7m")) {
+				validationResult.add(this.validateP7M(file.getOriginalFilename(), validTypes));
+			} else {
+				var validation = new MimeTypeValidation();
+				validation.setFilename(file.getOriginalFilename());
+				validation.setValidated(validTypes.contains(file.getContentType()));
 
-			validationResult.add(validation);
+				validationResult.add(validation);
+			}
 		}
 
 		return validationResult;
@@ -68,11 +73,15 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 			walk.filter(Files::isRegularFile).forEach(file -> {
 				Tika tika = new Tika();
 				try {
-					String fileMimeType = tika.detect(file);
-					var validation = new MimeTypeValidation();
-					validation.setFilename(file.getFileName().toString());
-					validation.setValidated(validTypes.contains(fileMimeType));
-					validationResult.add(validation);
+					if (Objects.requireNonNull(file.getFileName().toString()).endsWith("p7m")) {
+						validationResult.add(this.validateP7M(file.getFileName().toString(), validTypes));
+					} else {
+						String fileMimeType = tika.detect(file);
+						var validation = new MimeTypeValidation();
+						validation.setFilename(file.getFileName().toString());
+						validation.setValidated(validTypes.contains(fileMimeType));
+						validationResult.add(validation);
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -84,5 +93,17 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 
 		return new PageImpl<>(validationResult.subList(start, end), pageable, validationResult.size());
 	}
+
+	private MimeTypeValidation validateP7M(String filename, List<String> validTypes) throws IOException {
+		Path path = Path.of(Objects.requireNonNull(filename).replace(".p7m", ""));
+		String contentType = Files.probeContentType(path);
+
+		var validation = new MimeTypeValidation();
+		validation.setFilename(filename);
+		validation.setValidated(validTypes.contains(contentType));
+
+		return validation;
+	}
+
 
 }

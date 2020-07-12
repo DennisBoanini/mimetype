@@ -11,7 +11,7 @@ Il profilo **dev** è impostato per utilizzare il database in memory **H2** che 
 ### Profilo demo
 Il profilo **demo** non è attivo di default, deve quindi essere impostato per eseguire l'applicazione con questo profilo.
 Per eseguire l'applicazione da linea di comando, con questo profilo, utilizzare il comando `mvn spring-boot:run -Dspring-boot.run.profiles=demo`.
-Il profilo **demo** è impostato per connettersi a DB MySQL, le cui impostazione di connessione sono presenti nel file *application-demo.properties*.
+Il profilo **demo** è impostato per connettersi a DB MySQL, le cui impostazioni di connessione sono presenti nel file *application-demo.properties*.
 
 ## Endpoint
 

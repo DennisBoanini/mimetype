@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -80,7 +81,10 @@ public class MimeTypeServiceImpl implements MimeTypeService {
 		int totalPages;
 
 		try (Stream<Path> walk = Files.walk(Paths.get(pathToFolder))) {
-			List<Path> pathList = walk.filter(Files::isRegularFile).collect(Collectors.toList());
+			Predicate<Path> isNotHiddenFile = path -> { try { return !Files.isHidden(path); } catch (IOException e) { e.printStackTrace(); } return false; };
+			Predicate<Path> isNotDirectory = path -> !Files.isDirectory(path);
+			List<Path> pathList = walk.filter(isNotHiddenFile).filter(isNotDirectory).filter(Files::isRegularFile).collect(Collectors.toList());
+
 			totalPages = pathList.size();
 
 			start = (int) pageable.getOffset();
